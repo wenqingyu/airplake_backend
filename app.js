@@ -75,7 +75,7 @@ function extendAPIOutput(req, res, next) {
     res.apiError = function (err) {
         res.jsonp({
             status: 'Error',
-            error_code: err.err_code || 'UNKNOW',
+            error_code: err.err_code || 500,
             error_msg: err.error_msg || err.toString()
         })
     }

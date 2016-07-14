@@ -15,14 +15,14 @@ module.exports = {
             {
                 type: 'file', //文件输出
                 filename: 'log/portal.log',
-                maxLogSize: 1024,
+                maxLogSize: 10240,
                 backups: 3,
                 category: 'portal'
             },
             {
                 type: 'file', //文件输出
                 filename: 'log/http.log',
-                maxLogSize: 1024,
+                maxLogSize: 10240,
                 backups: 3,
                 category: 'http'
             }

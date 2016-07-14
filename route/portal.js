@@ -7,7 +7,7 @@ exports.autoroute = {
         '/api/v1/portals': add //新增服务商入口
     },
     put: {
-
+        '/api/v1/portals/:id': update //更新服务商入口
     }
 };
 var co = require('co');
@@ -29,7 +29,30 @@ function add(req, res) {
             return res.apiError(err.nameExists);
         }
         //进行保存操作
-        sql = gbObj.mysql.makeSQLInsert('portal',req.body);
+        sql = gbObj.mysql.makeSQLInsert('portal', req.body);
+        result = yield gbObj.pool.queryAsync(sql);
+        res.apiSuccess();
+    }).catch(function (err) {
+        logger.error(err);
+        res.apiError(er);
+    })
+}
+
+/**
+ * 更新服务商入口
+ */
+function update(req, res) {
+    co(function* () {
+        //查看团队名称是否重复
+        let id = req.params.id;
+        let sql = "SELECT count(1) as num FROM portal WHERE teamname = @teamname@ AND id!=@id@;";
+        sql = gbObj.mysql.makeSQL(sql, { teamname: req.body.teamname, id: id });
+        let result = yield gbObj.pool.queryAsync(sql);
+        if (result[0] && result[0].num > 0) {
+            logger.error(err.nameExists);
+            return res.apiError(err.nameExists);
+        }
+        sql = gbObj.mysql.makeSQLUpdate('portal', req.body, { id: id });
         result = yield gbObj.pool.queryAsync(sql);
         res.apiSuccess();
     }).catch(function (err) {
