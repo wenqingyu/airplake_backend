@@ -3,11 +3,21 @@ var app = new express();
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var _ = require('underscore');
-var mysql = require('shadow-mysql');
+global.gbObj = {};  //定义全局变量
+gbObj.conf = require('./config');
+gbObj.mysql = require('shadow-mysql');
+global.log4js = require('log4js');
+log4js.configure(gbObj.conf.log);
 var loadRoute = require('./loadRoute'); //加载路由文件
 var routes = loadRoute.allRoutes;
 var allRoutesInfo = loadRoute.allRoutesInfo;
 
+//初始化连接
+init();
+//记录请求
+var logger = log4js.getLogger('http');
+logger.setLevel(gbObj.conf.logLevel);
+app.use(log4js.connectLogger(logger, {level:log4js.levels.INFO}));
 //接收json数据
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,6 +40,7 @@ _.each(allRoutesInfo, function (route) {
         app[route.method](route.routeRule, route.middleWare, route.func);
     }
 }.bind(app));
+
 // 所有路由都未匹配（404）
 app.get('*', function (req, res, next) {
     res.sendStatus(404);
@@ -43,8 +54,10 @@ app.put('*', function (req, res, next) {
 app.delete('*', function (req, res, next) {
     res.sendStatus(404);
 });
+//开启服务器监听
+app.listen(gbObj.conf.port);
 
-app.listen(3001)
+
 /**
  * 给res对象添加拓展的返回方法
  */
@@ -67,5 +80,13 @@ function extendAPIOutput(req, res, next) {
         })
     }
     next();
+}
+
+/**
+ * 初始化连接
+ */
+function init() {
+    //初始化数据库
+    gbObj.pool = new gbObj.mysql.Pool(gbObj.conf.db); //将连接池对象放在全局对象上面
 }
 
