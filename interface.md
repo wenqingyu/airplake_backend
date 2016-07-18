@@ -120,3 +120,24 @@ demo:
             }
         })
 ```
+
+* 详细信息保存  
+接口地址: http://139.196.203.14:3010/api/v1/users/name  (name为用户名,会带在跳转地址的参数上)  
+请求方式: PUT    
+demo:  
+```javascript  
+          $.ajax({
+            type:"PUT",
+            url: "http://139.196.203.14:3010/api/v1/users/xc",
+            data:{
+                birthday:'1988-09-23',
+                tel:'13806207777',
+                wechat:'csdf',
+                city:'苏州',
+                idCard:'身份证'
+            },
+            success:function(data){
+                alert(JSON.stringify(data));
+            }
+        })
+```

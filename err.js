@@ -3,6 +3,7 @@
  */
 module.exports = resErr = {};
 resErr.nameExists = createApiError(10001,'Name Is Exists');
+resErr.emailExists = createApiError(10002,'Email Is Exists');
 //code=出错代码,msg=出错描述信息
 function createApiError(code, msg) {
     let err = new Error(msg);
