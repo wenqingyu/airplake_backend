@@ -102,7 +102,7 @@ demo:
 ```
 
 ##用户
-* 注册
+* 注册  
 接口地址: http://139.196.203.14:3010/api/v1/users/verification  
 请求方式: POST    
 demo:  
