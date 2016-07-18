@@ -1,6 +1,12 @@
 module.exports = {
     //端口
-    port: 3001,
+    port: 3010,
+    //email配置
+    email: {
+        trans: 'smtps://xc_white%40126.com:5345451@smtp.126.com', //邮件服务器
+        from: 'xc_white@126.com', //发送者账号
+        redirect:'http://www.qq.com'
+    },
     //数据库配置
     db: {
         host: '139.196.203.14',
@@ -25,8 +31,15 @@ module.exports = {
                 maxLogSize: 10240,
                 backups: 3,
                 category: 'http'
+            },
+            {
+                type: 'file', //文件输出
+                filename: 'log/user.log',
+                maxLogSize: 10240,
+                backups: 3,
+                category: 'user'
             }
         ]
     },
-    logLevel:'DEBUG'
+    logLevel: 'DEBUG'
 }

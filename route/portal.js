@@ -38,7 +38,7 @@ function add(req, res) {
         res.apiSuccess();
     }).catch(function (err) {
         logger.error(err);
-        res.apiError(er);
+        res.apiError(err);
     })
 }
 
@@ -61,7 +61,7 @@ function update(req, res) {
         res.apiSuccess();
     }).catch(function (err) {
         logger.error(err);
-        res.apiError(er);
+        res.apiError(err);
     })
 }
 
@@ -76,7 +76,7 @@ function del(req, res) {
         res.apiSuccess();
     }).catch(function (err) {
         logger.error(err);
-        res.apiError(er);
+        res.apiError(err);
     })
 }
 
@@ -90,7 +90,7 @@ function list(req, res) {
         res.apiSuccess(result);
     }).catch(function (err) {
         logger.error(err);
-        res.apiError(er);
+        res.apiError(err);
     })
 }
 
@@ -105,6 +105,6 @@ function detail(req, res) {
         res.apiSuccess(result);
     }).catch(function (err) {
         logger.error(err);
-        res.apiError(er);
+        res.apiError(err);
     })
 }
