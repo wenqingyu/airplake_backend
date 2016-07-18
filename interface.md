@@ -100,3 +100,23 @@ demo:
             }
         })
 ```
+
+##用户
+* 注册
+接口地址: http://139.196.203.14:3010/api/v1/users/verification  
+请求方式: POST  
+demo:  
+```javascript  
+          $.ajax({
+            type:"POST",
+            url: "http://139.196.203.14:3010/api/v1/users/verification",
+            data:{
+                email:'119136016@qq.com',
+                name:'xc',
+                password:'csdf'
+            },
+            success:function(data){
+                alert(JSON.stringify(data));
+            }
+        })
+```
