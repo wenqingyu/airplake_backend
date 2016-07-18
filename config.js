@@ -15,6 +15,10 @@ module.exports = {
         database: 'airplake',
         multipleStatements: 'true' //一次执行多条sql
     },
+    redis: {
+        port: 6379,          // Redis port
+        host: '139.196.203.14'
+    },
     log: {
         appenders: [
             { type: 'console' }, //控制台输出

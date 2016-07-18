@@ -6,7 +6,7 @@ exports.autoroute = {
         '/api/v1/users/verification': verification, //邮箱验证
     },
     put: {
-        '/api/v1/users/:name': update //用户注册
+        '/api/v1/users/:token': update //用户注册
     },
     delete: {
 
@@ -18,6 +18,7 @@ var promise = require('bluebird');
 var logger = log4js.getLogger('user');
 var crypto = require('crypto');
 var err = require('../err');
+var jwt = require('jsonwebtoken');
 logger.setLevel(gbObj.conf.logLevel);
 
 /**
@@ -44,12 +45,14 @@ function verification(req, res) {
         //信息入库
         sql = gbObj.mysql.makeSQLInsert('user', req.body);
         result = yield gbObj.pool.queryAsync(sql);
+        //jwt加密
+        var token = jwt.sign({ name: req.body.name, expire: parseInt(1468825097) + 1200 }, 'air');
         // 设置邮件内容
         let mailOptions = {
             from: gbObj.conf.email.from, // 发件地址
             to: req.body.email, // 收件列表
             subject: "验证邮箱", // 标题
-            html: '你好，欢迎注册账号</br>验证地址:' + gbObj.conf.email.redirect + '?name=' + req.body.name// html 内容
+            html: '你好，欢迎注册账号</br>验证地址:' + gbObj.conf.email.redirect + '?token=' + token// html 内容
         }
         let sendRes = yield sendAsync(mailOptions);
         res.apiSuccess();
@@ -64,8 +67,19 @@ function verification(req, res) {
  */
 function update(req, res) {
     co(function* () {
+        let token = jwt.verify(req.params.token, 'air');
+        //判断用户名是否存在
+        if (!!!token.name) {
+            logger.error(err.nameExists);
+            return res.apiError(err.nameExists);
+        }
+        //判断是否过期
+        if (token.expire < (parseInt(Date.parse(new Date())) / 1000)) {
+            logger.error(err.expire);
+            return res.apiError(err.expire);
+        }
         //进行保存操作
-        let sql = gbObj.mysql.makeSQLUpdate('user', req.body, { name: req.params.name });
+        let sql = gbObj.mysql.makeSQLUpdate('user', req.body, { name: token.name });
         let result = yield gbObj.pool.queryAsync(sql);
         res.apiSuccess();
     }).catch(function (err) {
