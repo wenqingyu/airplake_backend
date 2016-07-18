@@ -46,7 +46,7 @@ function verification(req, res) {
         sql = gbObj.mysql.makeSQLInsert('user', req.body);
         result = yield gbObj.pool.queryAsync(sql);
         //jwt加密
-        var token = jwt.sign({ name: req.body.name, expire: parseInt(1468825097) + 1200 }, 'air');
+        var token = jwt.sign({ name: req.body.name, expire: parseInt(Date.parse(new Date())) + 1200 }, 'air');
         // 设置邮件内容
         let mailOptions = {
             from: gbObj.conf.email.from, // 发件地址
