@@ -47,8 +47,17 @@ function add(req, res) {
  */
 function update(req, res) {
     co(function* () {
-        let sql = gbObj.mysql.makeSQLUpdate('portal', req.body, { id: id });
+        //查看团队名称是否重复
+        let id = req.params.id;
+        let sql = "SELECT count(1) as num FROM portal WHERE teamname = @teamname@ AND id!=@id@;";
+        sql = gbObj.mysql.makeSQL(sql, { teamname: req.body.teamname, id: id });
         let result = yield gbObj.pool.queryAsync(sql);
+        if (result[0] && result[0].num > 0) {
+            logger.error(err.nameExists);
+            return res.apiError(err.nameExists);
+        }
+        sql = gbObj.mysql.makeSQLUpdate('portal', req.body, { id: id });
+        result = yield gbObj.pool.queryAsync(sql);
         res.apiSuccess();
     }).catch(function (err) {
         logger.error(err);
