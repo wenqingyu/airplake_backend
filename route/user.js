@@ -26,33 +26,34 @@ logger.setLevel(gbObj.conf.logLevel);
  */
 function verification(req, res) {
     co(function* () {
-        //查看用户名是否重复
-        let sql = gbObj.mysql.makeSQLSelect('user', ['count(1) as num'], { name: req.body.name });
-        let result = yield gbObj.pool.queryAsync(sql);
-        if (result[0] && result[0].num > 0) {
-            logger.error(err.nameExists);
-            return res.apiError(err.nameExists);
-        }
         //查看邮箱是否重复
-        sql = gbObj.mysql.makeSQLSelect('user', ['count(1) as num'], { email: req.body.email });
-        result = yield gbObj.pool.queryAsync(sql);
+        let sql = gbObj.mysql.makeSQLSelect('user', ['count(1) as num'], { email: req.body.email, flag: 1 });
+        let result = yield gbObj.pool.queryAsync(sql);
         if (result[0] && result[0].num > 0) {
             logger.error(err.emailExists);
             return res.apiError(err.emailExists);
         }
-        //对密码进行加密
-        req.body.password = sha1(req.body.password);
-        //信息入库
-        sql = gbObj.mysql.makeSQLInsert('user', req.body);
+        let redirect = req.body.type == 1 ? gbObj.conf.email.vendorRedirect : gbObj.conf.email.userRedirect;
+        let type = req.body.type;
+        delete req.body.type;
+        sql = gbObj.mysql.makeSQLSelect('user', ['count(1) as num'], { email: req.body.email });
         result = yield gbObj.pool.queryAsync(sql);
+        //若不存在未验证的数据,则插入
+        if (result[0] && result[0].num == 0) {
+            //信息入库
+            sql = gbObj.mysql.makeSQLInsert('user', req.body);
+            result = yield gbObj.pool.queryAsync(sql);
+        }
         //jwt加密
-        var token = jwt.sign({ name: req.body.name, expire: parseInt(Date.parse(new Date())) + 1200 }, 'air');
+        var token = jwt.sign({ type: type, email: req.body.email, expire: parseInt(Date.parse(new Date())) / 1000 + 1200 }, 'air');
         // 设置邮件内容
         let mailOptions = {
             from: gbObj.conf.email.from, // 发件地址
             to: req.body.email, // 收件列表
             subject: "验证邮箱", // 标题
-            html: '你好，欢迎注册账号</br>验证地址:' + gbObj.conf.email.redirect + '?token=' + token// html 内容
+            html: '你好，欢迎注册账号</br>验证地址:'
+            + redirect
+            + '?token=' + token// html 内容
         }
         let sendRes = yield sendAsync(mailOptions);
         res.apiSuccess();
@@ -68,19 +69,50 @@ function verification(req, res) {
 function update(req, res) {
     co(function* () {
         let token = jwt.verify(req.params.token, 'air');
-        //判断用户名是否存在
-        if (!!!token.name) {
-            logger.error(err.nameExists);
-            return res.apiError(err.nameExists);
+        //判断email是否存在
+        if (!!!token.email) {
+            logger.error(err.invalid);
+            return res.apiError(err.invalid);
         }
         //判断是否过期
         if (token.expire < (parseInt(Date.parse(new Date())) / 1000)) {
             logger.error(err.expire);
             return res.apiError(err.expire);
         }
-        //进行保存操作
-        let sql = gbObj.mysql.makeSQLUpdate('user', req.body, { name: token.name });
+        //判断该用户是否已经验证过
+        let sql = gbObj.mysql.makeSQLSelect('user', ['count(1) as num'], { email: token.email, flag: 1 });
         let result = yield gbObj.pool.queryAsync(sql);
+        //若该邮箱已验证过，则提示；
+        if (result[0] && result[0].num > 0) {
+            logger.error(err.verification);
+            return res.apiError(err.verification);
+        }
+        //判断是否也是服务商类型
+        if (parseInt(token.type) == 1) {
+            //查看团队名称是否重复
+            let sql = gbObj.mysql.makeSQLSelect('vendor', ['count(1) as num'], { teamname: req.body.vendor.teamname });
+            let result = yield gbObj.pool.queryAsync(sql);
+            if (result[0] && result[0].num > 0) {
+                logger.error(err.teamnameExists);
+                return res.apiError(err.teamnameExists);
+            }
+            //进行保存操作
+            sql = gbObj.mysql.makeSQLInsert('vendor', req.body.vendor);
+            result = yield gbObj.pool.queryAsync(sql);
+            //设置user表里面的vendor字段
+            if (result.insertId) {
+                req.body.user.vendorid = result.insertId;
+            } else {
+                logger.error(err.vendorInsertError);
+                return res.apiError(err.vendorInsertError);
+            }
+        }
+        //验证标识位
+        req.body.user.flag = 1;
+        req.body.user.password = sha1(req.body.user.password);
+        //进行保存操作
+        sql = gbObj.mysql.makeSQLUpdate('user', req.body.user, { email: token.email });
+        result = yield gbObj.pool.queryAsync(sql);
         res.apiSuccess();
     }).catch(function (err) {
         logger.error(err);

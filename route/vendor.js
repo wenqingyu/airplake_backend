@@ -1,17 +1,17 @@
 'use strict'
 exports.autoroute = {
     get: {
-        '/api/v1/portals': list, //获取列表
-        '/api/v1/portals/:id': detail //明细
+        '/api/v1/vendors': list, //获取列表
+        '/api/v1/vendors/:id': detail //明细
     },
     post: {
-        '/api/v1/portals': add //新增服务商入口
+        '/api/v1/vendors': add //新增服务商入口
     },
     put: {
-        '/api/v1/portals/:id': update //更新服务商入口
+        '/api/v1/vendors/:id': update //更新服务商入口
     },
     delete: {
-        '/api/v1/portals/:id': del //删除服务商入口
+        '/api/v1/vendors/:id': del //删除服务商入口
     }
 };
 var co = require('co');

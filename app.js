@@ -89,4 +89,3 @@ function init() {
     //初始化数据库
     gbObj.pool = new gbObj.mysql.Pool(gbObj.conf.db); //将连接池对象放在全局对象上面
 }
-
