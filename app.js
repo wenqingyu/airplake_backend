@@ -17,7 +17,7 @@ init();
 //记录请求
 var logger = log4js.getLogger('http');
 logger.setLevel(gbObj.conf.logLevel);
-app.use(log4js.connectLogger(logger, {level:log4js.levels.INFO}));
+app.use(log4js.connectLogger(logger, { level: log4js.levels.INFO }));
 //接收json数据
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -68,11 +68,12 @@ function extendAPIOutput(req, res, next) {
     res.apiSuccess = (data) => {
         res.jsonp({
             status: 'OK',
-            msgbody: data
+            code: 200,
+            data: data
         });
     }
     //相应api出错结果，err是一个Error对象
-    res.apiError = function (err) {
+    res.apiError = (err) => {
         res.jsonp({
             status: 'Error',
             error_code: err.err_code || 500,

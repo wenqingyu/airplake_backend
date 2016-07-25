@@ -1,6 +1,6 @@
 #接口文档  
 ##说明  
-请求正确返回格式:{"status":"OK","msgbody":返回数据}  
+请求正确返回格式:{"status":"OK",code: 200,"data":返回数据}  
 请求错误返回格式:{"status": "Error","error_code": "错误代码","error_msg": "错误信息"}
 
 ##注册流程
@@ -22,7 +22,7 @@ demo:
         })
 ```  
 返回结果:  
-    * 成功: {"status":"OK"}  
+    * 成功: {"status":"OK",code: 200}  
     * 失败:   
 {"status":"Error","error_code":10002,"error_msg":"Email Is Exists"}  
 {"status":"Error","error_code":500,"error_msg":"......"}
@@ -63,7 +63,7 @@ demo:
         })
 ```  
 返回结果:  
-    * 成功: {"status":"OK"}  
+    * 成功: {"status":"OK",code: 200}  
     * 失败:  
 {"status":"Error","error_code":10005,"error_msg":"Verify invalid"}  
 {"status":"Error","error_code":10004,"error_msg":"The User Has Been Verified"}  
