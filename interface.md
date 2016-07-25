@@ -70,6 +70,51 @@ demo:
 {"status":"Error","error_code":10003,"error_msg":"Expire"}  
 {"status":"Error","error_code":500,"error_msg":"......"}
 
+##服务类型接口
+* 获取列表  
+接口地址: http://139.196.203.14:3010/api/v1/servicetypes  
+请求方式: GET  
+demo:
+```javascript
+        $.ajax({
+            type:"GET",
+            url: "http://139.196.203.14:3010/api/v1/servicetypes",
+            data:{
+            },
+            success:function(data){
+                alert(JSON.stringify(data));
+            }
+        })
+```  
+返回结果:  
+    * 成功: {"status":"OK","code":200,"data":[{"id":1,"title":"测试","img":"http://test.img","star":4,"des":"abcd"},{"id":2,"title":"测试","img":"http://test.img","star":4,"des":"abcd"}]}  
+    * 失败:  
+{"status":"Error","error_code":500,"error_msg":"......"}
+
+* 新增  
+接口地址: http://139.196.203.14:3010/api/v1/servicetypes  
+请求方式: POST  
+demo:  
+```javascript  
+        $.ajax({
+            type:"POST",
+            url: "http://127.0.0.1:3010/api/v1/servicetypes",
+            data:{
+                title:'测试',
+                img: 'http://test.img',
+                star: 4,
+                des: 'abcd'
+            },
+            success:function(data){
+                alert(JSON.stringify(data));
+            }
+        })
+```  
+返回结果:  
+    * 成功: {"status":"OK","code":200}  
+    * 失败:  
+{"status":"Error","error_code":500,"error_msg":"......"}
+
 ##服务商入口
 * 获取列表  
 接口地址: http://139.196.203.14:3010/api/v1/portals  
