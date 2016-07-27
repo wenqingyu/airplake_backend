@@ -44,7 +44,7 @@ demo:
                     city:'广州',
                     servicetime:'全天',
                     equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
-                    content:['婚庆','工地'],
+                    servicetype:[1,2],
                     des:'测试'
                 },
                 user:{    //用户详细信息
@@ -164,7 +164,7 @@ demo:
                 city:'广州',
                 servicetime:'全天',
                 equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
-                content:['婚庆','工地'],
+                servicetype:[1,2],
                 des:'测试'
             },
             success:function(data){
