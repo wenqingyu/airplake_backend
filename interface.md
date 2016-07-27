@@ -151,7 +151,7 @@ demo:
 demo:
 ```javascript
         $.ajax({
-            type:"POST",
+            type:"GET",
             url: "http://139.196.203.14/api/v1/jobs",
             data:{
             },
@@ -171,7 +171,7 @@ demo:
 demo:
 ```javascript
         $.ajax({
-            type:"POST",
+            type:"GET",
             url: "http://139.196.203.14/api/v1/jobs/1",
             data:{
             },
