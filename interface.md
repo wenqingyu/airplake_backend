@@ -44,7 +44,7 @@ demo:
                     city:'广州',
                     servicetime:'全天',
                     equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
-                    servicetype:[1,2],
+                    servicetype:'1,2',
                     des:'测试'
                 },
                 user:{    //用户详细信息
@@ -128,7 +128,7 @@ demo:
                 title:'测试',
                 des: '描述',
                 city: '上海',
-                servicetype: [1,2],
+                servicetype: '1,2',
                 starttime:'2016-02-03',
                 endtime:'2016-02-04',
                 min:'3.02',
@@ -161,7 +161,7 @@ demo:
         })
 ```
 返回结果:  
-    * 成功: {"status":"OK","code":200,"data":[{"id":1,"title":"测试","des":"描述","city":"上海","servicetype":"[\"1\",\"2\"]","starttime":"2016-02-03","endtime":"2016-02-04","max":234.32,"min":3.02,"location":"xcsfdsafsa"}]}    
+    * 成功: {"status":"OK","code":200,"data":[{"id":1,"title":"测试","des":"描述","city":"上海","servicetype":"1,2","starttime":"2016-02-03","endtime":"2016-02-04","max":234.32,"min":3.02,"location":"xcsfdsafsa"}]}    
     * 失败:  
 {"status":"Error","error_code":500,"error_msg":"......"} 
 
@@ -181,7 +181,7 @@ demo:
         })
 ```
 返回结果:  
-    * 成功: {"status":"OK","code":200,"data":[{"id":1,"title":"测试","des":"描述","city":"上海","servicetype":"[\"1\",\"2\"]","starttime":"2016-02-03","endtime":"2016-02-04","max":234.32,"min":3.02,"location":"xcsfdsafsa"}]}  
+    * 成功: {"status":"OK","code":200,"data":[{"id":1,"title":"测试","des":"描述","city":"上海","servicetype":"1,2","starttime":"2016-02-03","endtime":"2016-02-04","max":234.32,"min":3.02,"location":"xcsfdsafsa"}]}  
     * 失败:  
 {"status":"Error","error_code":500,"error_msg":"......"}  
 
