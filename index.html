@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Airplake backend Document by wenqingyu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Airplake backend Document</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/wenqingyu/airplake_backend" class="btn">View on GitHub</a>
+      <a href="https://github.com/wenqingyu/airplake_backend/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/wenqingyu/airplake_backend/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="注册流程" class="anchor" href="#%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>注册流程</h2>
+
+<h3>
+<a id="说明" class="anchor" href="#%E8%AF%B4%E6%98%8E" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>说明</h3>
+
+<p>请求正确返回格式:{"status":"OK",code: 200,"data":返回数据}<br>
+请求错误返回格式:{"status": "Error","error_code": "错误代码","error_msg": "错误信息"}</p>
+
+<ul>
+<li>注册<br>
+接口地址: <a href="http://139.196.203.14:3010/api/v1/users/verification">http://139.196.203.14:3010/api/v1/users/verification</a><br>
+请求方式: POST<br>
+demo:<br>
+</li>
+</ul>
+
+<div class="highlight highlight-source-js"><pre>          <span class="pl-smi">$</span>.<span class="pl-en">ajax</span>({
+            type<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>POST<span class="pl-pds">"</span></span>,
+            url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>http://139.196.203.14:3010/api/v1/users/verification<span class="pl-pds">"</span></span>,
+            data<span class="pl-k">:</span>{
+                email<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>119136016@qq.com<span class="pl-pds">'</span></span>,
+                type<span class="pl-k">:</span> <span class="pl-c1">2</span>    <span class="pl-c">// 1:服务商注册 2.用户注册</span>
+            },
+            <span class="pl-en">success</span><span class="pl-k">:</span><span class="pl-k">function</span>(<span class="pl-smi">data</span>){
+                <span class="pl-en">alert</span>(<span class="pl-c1">JSON</span>.<span class="pl-en">stringify</span>(data));
+            }
+        })</pre></div>
+
+<p>返回结果:<br>
+    * 成功: {"status":"OK",code: 200}<br>
+    * 失败:<br>
+{"status":"Error","error_code":10002,"error_msg":"Email Is Exists"}<br>
+{"status":"Error","error_code":500,"error_msg":"......"}</p>
+
+<ul>
+<li>详细信息保存<br>
+接口地址: <a href="http://139.196.203.14:3010/api/v1/users/token">http://139.196.203.14:3010/api/v1/users/token</a>  (token为jwt加密数据,会带在跳转地址的参数上面)<br>
+请求方式: PUT<br>
+demo:<br>
+</li>
+</ul>
+
+<div class="highlight highlight-source-js"><pre>          <span class="pl-smi">$</span>.<span class="pl-en">ajax</span>({
+            type<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>PUT<span class="pl-pds">"</span></span>,
+            url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>http://139.196.203.14:3010/api/v1/users/token<span class="pl-pds">"</span></span>,
+            data<span class="pl-k">:</span>{
+                vendor<span class="pl-k">:</span>{   <span class="pl-c">//服务商详细信息</span>
+                    teamname<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>测试团队1<span class="pl-pds">'</span></span>,
+                    tel<span class="pl-k">:</span><span class="pl-c1">13706207777</span>,
+                    wechat<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>colin<span class="pl-pds">'</span></span>,
+                    email<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>xx@qq.com<span class="pl-pds">'</span></span>,
+                    city<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>广州<span class="pl-pds">'</span></span>,
+                    servicetime<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>全天<span class="pl-pds">'</span></span>,
+                    equipment<span class="pl-k">:</span>[{type<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>无人机<span class="pl-pds">'</span></span>,model<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>大疆精灵3<span class="pl-pds">'</span></span>},{type<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>无人机<span class="pl-pds">'</span></span>,model<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>大疆精灵3<span class="pl-pds">'</span></span>}],
+                    servicetype<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>1,2<span class="pl-pds">'</span></span>,
+                    des<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>测试<span class="pl-pds">'</span></span>
+                },
+                user<span class="pl-k">:</span>{    <span class="pl-c">//用户详细信息</span>
+                    name<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>xc<span class="pl-pds">'</span></span>,
+                    password<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>csdf<span class="pl-pds">'</span></span>,
+                    birthday<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>1988-09-23<span class="pl-pds">'</span></span>,
+                    tel<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>13806207777<span class="pl-pds">'</span></span>,
+                    wechat<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>csdf<span class="pl-pds">'</span></span>,
+                    city<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>苏州<span class="pl-pds">'</span></span>,
+                    idCard<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>身份证<span class="pl-pds">'</span></span>
+                }  
+            },
+            <span class="pl-en">success</span><span class="pl-k">:</span><span class="pl-k">function</span>(<span class="pl-smi">data</span>){
+                <span class="pl-en">alert</span>(<span class="pl-c1">JSON</span>.<span class="pl-en">stringify</span>(data));
+            }
+        })</pre></div>
+
+<p>返回结果:<br>
+    * 成功: {"status":"OK",code: 200}<br>
+    * 失败:<br>
+{"status":"Error","error_code":10005,"error_msg":"Verify invalid"}<br>
+{"status":"Error","error_code":10004,"error_msg":"The User Has Been Verified"}<br>
+{"status":"Error","error_code":10003,"error_msg":"Expire"}<br>
+{"status":"Error","error_code":500,"error_msg":"......"}</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/wenqingyu/airplake_backend">Airplake backend Document</a> is maintained by <a href="https://github.com/wenqingyu">wenqingyu</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
