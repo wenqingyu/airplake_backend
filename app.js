@@ -74,7 +74,7 @@ function auth(req, res, next) {
     try {
         //正则匹配，先把登录，验证几个路由过滤，因为不需要验证token
         var reg = /^\/api\/v1\/users\//;
-        if(reg.test(req.url) && (req.method.toLocaleLowerCase()=='post' || req.method.toLocaleLowerCase()=='put')){
+        if (reg.test(req.url) && (req.method.toLocaleLowerCase() == 'post' || req.method.toLocaleLowerCase() == 'put')) {
             return next();
         }
         //非法路由
@@ -93,9 +93,9 @@ function auth(req, res, next) {
         let source = req.url.split('/')[3];
         //是否具有该路由权限
         let isPower = false;
+        //该路由对应的权限值
+        let itemPower = perssion[req.method.toLocaleLowerCase()];
         for (let i = 0; i < token.perssion.length; i++) {
-            //该路由对应的权限值
-            let itemPower = perssion[req.method.toLocaleLowerCase()];
             //判断资源是否一致并且权限值一致
             if (token.perssion[i].source == source && ((itemPower & parseInt(token.perssion[i].permission)) == itemPower)) {
                 isPower = true;
@@ -105,7 +105,7 @@ function auth(req, res, next) {
         if (!isPower) {
             logger.error(err.authError);
             return res.apiError(err.authError);
-        }else{
+        } else {
             next();
         }
     } catch (e) {
