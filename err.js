@@ -10,6 +10,8 @@ resErr.invalid = createApiError(10005,'Verify invalid');
 resErr.teamnameExists = createApiError(10006,'Teamname Is Exists');
 resErr.vendorInsertError = createApiError(500,'vendorInsertError');
 resErr.loginError = createApiError(10007,'User Is Not Exists');
+resErr.tokenError = createApiError(10008,'Illegal route');
+resErr.authError = createApiError(10009,'Permission denied');
 //code=出错代码,msg=出错描述信息
 function createApiError(code, msg) {
     let err = new Error(msg);
