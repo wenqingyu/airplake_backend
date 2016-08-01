@@ -1,8 +1,10 @@
 'use strict'
 exports.autoroute = {
     get: {
+
     },
     post: {
+        '/api/v1/users/login': login,  //登录
         '/api/v1/users/verification': verification, //邮箱验证
     },
     put: {
@@ -19,7 +21,44 @@ var logger = log4js.getLogger('user');
 var crypto = require('crypto');
 var err = require('../err');
 var jwt = require('jsonwebtoken');
+var _ = require('underscore');
 logger.setLevel(gbObj.conf.logLevel);
+
+/**
+ * 登录
+ */
+function login(req, res) {
+    co(function* () {
+        //定义需要加密的obj
+        let tokenObj = {};
+        //对密码进行sha1加密
+        let password = sha1(req.body.password);
+        let sql = gbObj.mysql.makeSQLSelect('user', ['*'], { flag: 1, password: password, name: req.body.name });
+        let result = yield gbObj.pool.queryAsync(sql);
+        if (!result || result.length == 0) {
+            logger.error(err.loginError);
+            return res.apiError(err.loginError);
+        }
+        _.extend(tokenObj, result[0]);
+        //获取登录者的权限
+        sql = gbObj.mysql.makeSQLSelect('power', ['source', 'permission'], { roleid: tokenObj.roleid });
+        result = yield gbObj.pool.queryAsync(sql);
+        //赋值权限
+        tokenObj.perssion = result;
+        tokenObj.expire = parseInt(Date.parse(new Date())) / 1000 + 1200;
+        let token = jwt.sign(tokenObj, 'air');
+        res.setHeader('token', token);
+        //返回结果
+        let resResult = {};
+        //1:服务商 2:用户
+        resResult.type = tokenObj.vendorid ? 1 : 2;
+        resResult.isverification = tokenObj.isverification;
+        res.apiSuccess(resResult);
+    }).catch(function (err) {
+        logger.error(err);
+        res.apiError(err);
+    })
+}
 
 /**
  * 邮箱验证
@@ -45,7 +84,7 @@ function verification(req, res) {
             result = yield gbObj.pool.queryAsync(sql);
         }
         //jwt加密
-        var token = jwt.sign({ type: type, email: req.body.email, expire: parseInt(Date.parse(new Date())) / 1000 + 1200 }, 'air');
+        let token = jwt.sign({ type: type, email: req.body.email, expire: parseInt(Date.parse(new Date())) / 1000 + 1200 }, 'air');
         // 设置邮件内容
         let mailOptions = {
             from: gbObj.conf.email.from, // 发件地址
@@ -107,6 +146,8 @@ function update(req, res) {
                 return res.apiError(err.vendorInsertError);
             }
         }
+        //普通用户还是服务商用户(3:普通用户,4:服务商用户)
+        req.body.user.roleid = parseInt(token.type) == 1 ? 4 : 3;
         //验证标识位
         req.body.user.flag = 1;
         req.body.user.password = sha1(req.body.user.password);

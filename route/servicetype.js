@@ -1,7 +1,7 @@
 'use strict'
 exports.autoroute = {
     get: {
-        '/api/v1/serviceTypes': list
+        '/api/v1/servicetypes': list
     },
     post: {
         '/api/v1/servicetypes': add

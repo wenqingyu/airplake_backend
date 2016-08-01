@@ -64,6 +64,7 @@ app.listen(gbObj.conf.port);
 function extendAPIOutput(req, res, next) {
     //解决跨域问题
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     //相应api成功结果
     res.apiSuccess = (data) => {
         res.jsonp({
