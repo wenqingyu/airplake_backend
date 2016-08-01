@@ -3,6 +3,29 @@
 请求正确返回格式:{"status":"OK",code: 200,"data":返回数据}  
 请求错误返回格式:{"status": "Error","error_code": "错误代码","error_msg": "错误信息"}
 
+##登录接口
+接口地址: http://139.196.203.14:3010/api/v1/users/login  
+请求方式: POST    
+demo:  
+```javascript  
+          $.ajax({
+            type:"POST",
+            url: "http://139.196.203.14:3010/api/v1/users/login",
+            data:{name:'xc',password: 'csdf'},
+            success:function(data){
+                alert(JSON.stringify(data));
+            }
+        })
+```  
+返回结果:  
+    * 成功:  
+    {"status":"OK","code":200,"data":{"type":2,"isverification":null}}   
+    说明:type指的是用户还是服务商(1:服务商;2:用户); isverification只有是服务商才有用，指的是是否已经验证过(1:已验证)  
+    另外token会存在header里面，节点就叫token。 请保证后续接口header里面都会传给我
+    * 失败:   
+{"status":"Error","error_code":10007,"error_msg":"User Is Not Exists"}  
+{"status":"Error","error_code":500,"error_msg":"......"}
+
 ##注册流程
 * 注册  
 接口地址: http://139.196.203.14:3010/api/v1/users/verification  
