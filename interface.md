@@ -36,8 +36,7 @@ demo:
             type:"POST",
             url: "http://139.196.203.14:3010/api/v1/users/verification",
             data:{
-                email:'119136016@qq.com',
-                type: 2    // 1:服务商注册 2.用户注册
+                email:'119136016@qq.com'
             },
             success:function(data){
                 alert(JSON.stringify(data));
@@ -59,17 +58,6 @@ demo:
             type:"PUT",
             url: "http://139.196.203.14:3010/api/v1/users/token",
             data:{
-                vendor:{   //服务商详细信息
-                    teamname:'测试团队1',
-                    tel:13706207777,
-                    wechat:'colin',
-                    email:'xx@qq.com',
-                    city:'广州',
-                    servicetime:'全天',
-                    equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
-                    servicetype:'1,2',
-                    des:'测试'
-                },
                 user:{    //用户详细信息
                     name:'xc',
                     password:'csdf',
@@ -210,97 +198,35 @@ demo:
 
 
 ##服务商入口
-* 获取列表  
-接口地址: http://139.196.203.14:3010/api/v1/portals  
-请求方式: GET  
-demo:
-```javascript
-        $.ajax({
-            type:"GET",
-            url: "http://139.196.203.14:3010/api/v1/portals",
-            data:{
-            },
-            success:function(data){
-                alert(JSON.stringify(data));
-            }
-        })
-```
-
-* 单个服务商详细信息  
-接口地址: http://139.196.203.14:3010/api/v1/portals/id  (id为服务商id)  
-请求方式: GET  
-demo:
-```javascript
-        $.ajax({
-            type:"GET",
-            url: "http://139.196.203.14:3010/api/v1/portals/4",
-            data:{
-            },
-            success:function(data){
-                alert(JSON.stringify(data));
-            }
-        })
-```
-
 * 新增  
-接口地址: http://139.196.203.14:3010/api/v1/portals  
+接口地址: http://139.196.203.14:3010/api/v1/vendors  
 请求方式: POST  
 demo:  
 ```javascript  
         $.ajax({
             type:"POST",
-            url: "http://139.196.203.14:3010/api/v1/portals",
+            url: "http://139.196.203.14:3010/api/v1/vendors",
             data:{
-                teamname:'测试团队1',
-                tel:13706207777,
-                wechat:'colin',
-                email:'xx@qq.com',
-                city:'广州',
-                servicetime:'全天',
-                equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
-                servicetype:[1,2],
-                des:'测试'
-            },
-            success:function(data){
-                alert(JSON.stringify(data));
-            }
-        })
-```
-
-* 修改  
-接口地址: http://139.196.203.14:3010/api/v1/portals/id  (id为服务商id)  
-请求方式: PUT  
-demo:  
-```javascript  
-        $.ajax({
-            type:"POST",
-            url: "http://139.196.203.14:3010/api/v1/portals/4",
-            data:{
-                teamname:'测试团队1',
-                tel:13706207777,
-                wechat:'colin',
-                email:'xx@qq.com',
-                city:'广州',
-                servicetime:'全天',
-                equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
-                content:['婚庆','工地'],
-                des:'测试'
-            },
-            success:function(data){
-                alert(JSON.stringify(data));
-            }
-        })
-```
-
-* 删除  
-接口地址: http://139.196.203.14:3010/api/v1/portals/id  (id为服务商id)  
-请求方式: DELETE  
-demo:  
-```javascript  
-          $.ajax({
-            type:"DELETE",
-            url: "http://139.196.203.14:3010/api/v1/portals/3",
-            data:{
+                vendor:{
+                    teamname:'测试团队1',
+                    tel:13706207777,
+                    wechat:'colin',
+                    email:'xx@qq.com',
+                    city:'广州',
+                    servicetime:'全天',
+                    equipment:[{type:'无人机',model:'大疆精灵3'},{type:'无人机',model:'大疆精灵3'}],
+                    servicetype:[1,2],
+                    des:'测试'
+                },
+                user:{    //用户详细信息
+                    name:'xc',
+                    password:'csdf',
+                    birthday:'1988-09-23',
+                    tel:'13806207777',
+                    wechat:'csdf',
+                    city:'苏州',
+                    idCard:'身份证'
+                }  
             },
             success:function(data){
                 alert(JSON.stringify(data));

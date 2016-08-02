@@ -106,6 +106,11 @@ function auth(req, res, next) {
             logger.error(err.authError);
             return res.apiError(err.authError);
         } else {
+            //更新token的过期时间
+            token.expire = parseInt(Date.parse(new Date())) / 1000 + 1200;
+            req.token = token;
+            token = jwt.sign(token, 'air');
+            res.setHeader('token', token);
             next();
         }
     } catch (e) {

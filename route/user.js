@@ -72,9 +72,7 @@ function verification(req, res) {
             logger.error(err.emailExists);
             return res.apiError(err.emailExists);
         }
-        let redirect = req.body.type == 1 ? gbObj.conf.email.vendorRedirect : gbObj.conf.email.userRedirect;
-        let type = req.body.type;
-        delete req.body.type;
+        let redirect = gbObj.conf.email.redirect;
         sql = gbObj.mysql.makeSQLSelect('user', ['count(1) as num'], { email: req.body.email });
         result = yield gbObj.pool.queryAsync(sql);
         //若不存在未验证的数据,则插入
@@ -84,7 +82,7 @@ function verification(req, res) {
             result = yield gbObj.pool.queryAsync(sql);
         }
         //jwt加密
-        let token = jwt.sign({ type: type, email: req.body.email, expire: parseInt(Date.parse(new Date())) / 1000 + 1200 }, 'air');
+        let token = jwt.sign({ email: req.body.email, expire: parseInt(Date.parse(new Date())) / 1000 + 1200 }, 'air');
         // 设置邮件内容
         let mailOptions = {
             from: gbObj.conf.email.from, // 发件地址
@@ -126,38 +124,28 @@ function update(req, res) {
             logger.error(err.verification);
             return res.apiError(err.verification);
         }
-        //判断是否也是服务商类型
-        if (parseInt(token.type) == 1) {
-            //查看团队名称是否重复
-            let sql = gbObj.mysql.makeSQLSelect('vendor', ['count(1) as num'], { teamname: req.body.vendor.teamname });
-            let result = yield gbObj.pool.queryAsync(sql);
-            if (result[0] && result[0].num > 0) {
-                logger.error(err.teamnameExists);
-                return res.apiError(err.teamnameExists);
-            }
-            //进行保存操作
-            sql = gbObj.mysql.makeSQLInsert('vendor', req.body.vendor);
-            result = yield gbObj.pool.queryAsync(sql);
-            //设置user表里面的vendor字段
-            if (result.insertId) {
-                req.body.user.vendorid = result.insertId;
-            } else {
-                logger.error(err.vendorInsertError);
-                return res.apiError(err.vendorInsertError);
-            }
-        }
-        //普通用户还是服务商用户(3:普通用户,4:服务商用户)
-        req.body.user.roleid = parseInt(token.type) == 1 ? 4 : 3;
+        req.body.user.roleid = 3;
         //验证标识位
         req.body.user.flag = 1;
         req.body.user.password = sha1(req.body.user.password);
         //进行保存操作
         sql = gbObj.mysql.makeSQLUpdate('user', req.body.user, { email: token.email });
         result = yield gbObj.pool.queryAsync(sql);
+        //生成resheader里面的token
+        let tokenObj = {};
+        _.extend(tokenObj,req.body.user);
+        tokenObj.email = token.email;
+        tokenObj.expire = parseInt(Date.parse(new Date())) / 1000 + 1200;
+        //获取登录者的权限
+        sql = gbObj.mysql.makeSQLSelect('power', ['source', 'permission'], { roleid: tokenObj.roleid });
+        result = yield gbObj.pool.queryAsync(sql);
+        //赋值权限
+        tokenObj.perssion = result;
+        res.setHeader('token', jwt.sign(tokenObj, 'air'));
         res.apiSuccess();
-    }).catch(function (err) {
-        logger.error(err);
-        res.apiError(err);
+    }).catch(function (er) {
+        logger.error(er);
+        res.apiError(er);
     })
 }
 

@@ -18,6 +18,7 @@ var co = require('co');
 var Promise = require('bluebird');
 var err = require('../err');
 var logger = log4js.getLogger('portal');
+var jwt = require('jsonwebtoken');
 logger.setLevel(gbObj.conf.logLevel);
 
 /**
@@ -26,15 +27,26 @@ logger.setLevel(gbObj.conf.logLevel);
 function add(req, res) {
     co(function* () {
         //查看团队名称是否重复
-        let sql = gbObj.mysql.makeSQLSelect('portal', ['count(1) as num'], { teamname: req.body.teamname });
+        let sql = gbObj.mysql.makeSQLSelect('vendor', ['count(1) as num'], { teamname: req.body.vendor.teamname });
         let result = yield gbObj.pool.queryAsync(sql);
         if (result[0] && result[0].num > 0) {
             logger.error(err.nameExists);
             return res.apiError(err.nameExists);
         }
         //进行保存操作
-        sql = gbObj.mysql.makeSQLInsert('portal', req.body);
+        sql = gbObj.mysql.makeSQLInsert('vendor', req.body.vendor);
         result = yield gbObj.pool.queryAsync(sql);
+        req.body.user.roleid = 4;
+        req.body.user.vendorid = result.insertId;
+        //修改用户表的vendorid
+        sql = gbObj.mysql.makeSQLUpdate('user', req.body.user, { email: req.token.email });
+        result = yield gbObj.pool.queryAsync(sql);
+        //获取服务商的权限
+        sql = gbObj.mysql.makeSQLSelect('power', ['source', 'permission'], { roleid: 4 });
+        result = yield gbObj.pool.queryAsync(sql);
+        //赋值权限
+        req.token.perssion = result;
+        res.setHeader('token', jwt.sign(req.token, 'air'));
         res.apiSuccess();
     }).catch(function (err) {
         logger.error(err);
@@ -49,14 +61,14 @@ function update(req, res) {
     co(function* () {
         //查看团队名称是否重复
         let id = req.params.id;
-        let sql = "SELECT count(1) as num FROM portal WHERE teamname = @teamname@ AND id!=@id@;";
+        let sql = "SELECT count(1) as num FROM vendor WHERE teamname = @teamname@ AND id!=@id@;";
         sql = gbObj.mysql.makeSQL(sql, { teamname: req.body.teamname, id: id });
         let result = yield gbObj.pool.queryAsync(sql);
         if (result[0] && result[0].num > 0) {
             logger.error(err.nameExists);
             return res.apiError(err.nameExists);
         }
-        sql = gbObj.mysql.makeSQLUpdate('portal', req.body, { id: id });
+        sql = gbObj.mysql.makeSQLUpdate('vendor', req.body, { id: id });
         result = yield gbObj.pool.queryAsync(sql);
         res.apiSuccess();
     }).catch(function (err) {
