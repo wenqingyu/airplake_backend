@@ -30,8 +30,8 @@ function add(req, res) {
         let sql = gbObj.mysql.makeSQLSelect('vendor', ['count(1) as num'], { teamname: req.body.vendor.teamname });
         let result = yield gbObj.pool.queryAsync(sql);
         if (result[0] && result[0].num > 0) {
-            logger.error(err.nameExists);
-            return res.apiError(err.nameExists);
+            logger.error(err.teamnameExists);
+            return res.apiError(err.teamnameExists);
         }
         //进行保存操作
         sql = gbObj.mysql.makeSQLInsert('vendor', req.body.vendor);
@@ -48,9 +48,9 @@ function add(req, res) {
         req.token.perssion = result;
         res.setHeader('token', jwt.sign(req.token, 'air'));
         res.apiSuccess();
-    }).catch(function (err) {
-        logger.error(err);
-        res.apiError(err);
+    }).catch(function (er) {
+        logger.error(er);
+        res.apiError(er);
     })
 }
 

@@ -232,4 +232,11 @@ demo:
                 alert(JSON.stringify(data));
             }
         })
-```
+```  
+返回结果:  
+    * 成功:  
+    {"status":"OK","code":200}   
+    说明:oken会存在header里面，节点就叫token。 请保证后续接口header里面都会传给我  
+    * 失败:   
+{"status":"Error","error_code":10006,"error_msg":"Teamname Is Exists"}  
+{"status":"Error","error_code":500,"error_msg":"......"}
