@@ -13,6 +13,8 @@ var routes = loadRoute.allRoutes;
 var allRoutesInfo = loadRoute.allRoutesInfo;
 var jwt = require('jsonwebtoken');
 var err = require('./err');
+var Redis = require('ioredis');
+var co = require('co');
 const perssion = {
     get: 2,
     post: 4,
@@ -71,7 +73,7 @@ app.listen(gbObj.conf.port);
  * 权限认证
  */
 function auth(req, res, next) {
-    try {
+    co(function* () {
         //正则匹配，先把登录，验证几个路由过滤，因为不需要验证token
         var reg = /^\/api\/v1\/users\//;
         if (reg.test(req.url) && (req.method.toLocaleLowerCase() == 'post' || req.method.toLocaleLowerCase() == 'put')) {
@@ -84,20 +86,18 @@ function auth(req, res, next) {
         }
         //获取token
         let token = jwt.verify(req.headers.token, 'air');
-        //判断是否过期
-        if (token.expire < (parseInt(Date.parse(new Date())) / 1000)) {
-            logger.error(err.expire);
-            return res.apiError(err.expire);
-        }
         //获取路由的资源
         let source = req.url.split('/')[3];
+        //从redis中获取权限信息
+        let redisResult = yield gbObj.redis.get(token.email);
+        let redisPerssion = JSON.parse(redisResult).perssion;
         //是否具有该路由权限
         let isPower = false;
         //该路由对应的权限值
         let itemPower = perssion[req.method.toLocaleLowerCase()];
-        for (let i = 0; i < token.perssion.length; i++) {
+        for (let i = 0; i < redisPerssion.length; i++) {
             //判断资源是否一致并且权限值一致
-            if (token.perssion[i].source == source && ((itemPower & parseInt(token.perssion[i].permission)) == itemPower)) {
+            if (redisPerssion[i].source == source && ((itemPower & parseInt(redisPerssion[i].permission)) == itemPower)) {
                 isPower = true;
                 break;
             }
@@ -106,17 +106,15 @@ function auth(req, res, next) {
             logger.error(err.authError);
             return res.apiError(err.authError);
         } else {
-            //更新token的过期时间
-            token.expire = parseInt(Date.parse(new Date())) / 1000 + 1200;
-            req.token = token;
-            token = jwt.sign(token, 'air');
-            res.setHeader('token', token);
+            res.setHeader('token', req.headers.token);
+            req.token = JSON.parse(redisResult);
+            gbObj.redis.setex(token.email,1200,redisResult);
             next();
         }
-    } catch (e) {
-        logger.error(e);
-        return res.apiError(e);
-    }
+    }).catch(function (err) {
+         logger.error(e);
+         res.apiError(e);
+    })
 }
 
 /**
@@ -125,8 +123,7 @@ function auth(req, res, next) {
 function extendAPIOutput(req, res, next) {
     //解决跨域问题
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Headers', 'token');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,token');
     //相应api成功结果
     res.apiSuccess = (data) => {
         res.jsonp({
@@ -152,4 +149,9 @@ function extendAPIOutput(req, res, next) {
 function init() {
     //初始化数据库
     gbObj.pool = new gbObj.mysql.Pool(gbObj.conf.db); //将连接池对象放在全局对象上面
+    var redis = new Redis(gbObj.conf.redis, { lazyConnect: true });
+    redis.on('error', (err) => {
+        console.error('连接redis失败:' + err);
+    })
+    gbObj.redis = redis;
 }

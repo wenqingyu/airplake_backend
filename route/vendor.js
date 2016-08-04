@@ -36,6 +36,8 @@ function add(req, res) {
         //进行保存操作
         sql = gbObj.mysql.makeSQLInsert('vendor', req.body.vendor);
         result = yield gbObj.pool.queryAsync(sql);
+        req.body.user = req.body.user || {};
+        req.body.user.name = req.body.user.name || req.token.name;
         req.body.user.roleid = 4;
         req.body.user.vendorid = result.insertId;
         //修改用户表的vendorid
@@ -46,7 +48,9 @@ function add(req, res) {
         result = yield gbObj.pool.queryAsync(sql);
         //赋值权限
         req.token.perssion = result;
-        res.setHeader('token', jwt.sign(req.token, 'air'));
+        res.setHeader('token', jwt.sign({email:req.token.email,name:req.body.user.name,roleid:4,
+                              isverification:null}, 'air'));
+        gbObj.redis.setex(req.token.email,1200,JSON.stringify(req.token));
         res.apiSuccess();
     }).catch(function (er) {
         logger.error(er);

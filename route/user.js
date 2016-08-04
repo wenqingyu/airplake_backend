@@ -29,7 +29,7 @@ logger.setLevel(gbObj.conf.logLevel);
  */
 function login(req, res) {
     co(function* () {
-        //定义需要加密的obj
+        //定义存入redis的obj
         let tokenObj = {};
         //对密码进行sha1加密
         let password = sha1(req.body.password);
@@ -45,18 +45,14 @@ function login(req, res) {
         result = yield gbObj.pool.queryAsync(sql);
         //赋值权限
         tokenObj.perssion = result;
-        tokenObj.expire = parseInt(Date.parse(new Date())) / 1000 + 1200;
-        let token = jwt.sign(tokenObj, 'air');
+        let token = jwt.sign({email:tokenObj.email,name:req.body.name,roleid:tokenObj.roleid,
+                              isverification:tokenObj.isverification}, 'air');
         res.setHeader('token', token);
-        //返回结果
-        let resResult = {};
-        //1:服务商 2:用户
-        resResult.type = tokenObj.vendorid ? 1 : 2;
-        resResult.isverification = tokenObj.isverification;
-        res.apiSuccess(resResult);
-    }).catch(function (err) {
-        logger.error(err);
-        res.apiError(err);
+        gbObj.redis.setex(tokenObj.email,1200,JSON.stringify(tokenObj));
+        res.apiSuccess();
+    }).catch(function (er) {
+        logger.error(er);
+        res.apiError(er);
     })
 }
 
@@ -135,13 +131,14 @@ function update(req, res) {
         let tokenObj = {};
         _.extend(tokenObj,req.body.user);
         tokenObj.email = token.email;
-        tokenObj.expire = parseInt(Date.parse(new Date())) / 1000 + 1200;
         //获取登录者的权限
         sql = gbObj.mysql.makeSQLSelect('power', ['source', 'permission'], { roleid: tokenObj.roleid });
         result = yield gbObj.pool.queryAsync(sql);
         //赋值权限
         tokenObj.perssion = result;
-        res.setHeader('token', jwt.sign(tokenObj, 'air'));
+        gbObj.redis.setex(tokenObj.email,1200,JSON.stringify(tokenObj));
+        res.setHeader('token', jwt.sign({email:tokenObj.email,name:req.body.user.name,roleid:tokenObj.roleid,
+                              isverification:null}, 'air'));
         res.apiSuccess();
     }).catch(function (er) {
         logger.error(er);
