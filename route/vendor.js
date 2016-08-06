@@ -48,6 +48,8 @@ function add(req, res) {
         result = yield gbObj.pool.queryAsync(sql);
         //赋值权限
         req.token.perssion = result;
+        req.token.roleid = 4;
+        req.token.vendorid = result.insertId;
         res.setHeader('token', jwt.sign({email:req.token.email,name:req.body.user.name,roleid:4,
                               isverification:null}, 'air'));
         gbObj.redis.setex(req.token.email,1200,JSON.stringify(req.token));

@@ -90,6 +90,8 @@ function auth(req, res, next) {
         let source = req.url.split('/')[3];
         //从redis中获取权限信息
         let redisResult = yield gbObj.redis.get(token.email);
+        //如果查不到信息，代表已经过期
+        if(!redisResult) return res.apiError(err.expire);
         let redisPerssion = JSON.parse(redisResult).perssion;
         //是否具有该路由权限
         let isPower = false;
