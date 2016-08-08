@@ -113,7 +113,7 @@ function auth(req, res, next) {
             gbObj.redis.setex(token.email,1200,redisResult);
             next();
         }
-    }).catch(function (err) {
+    }).catch(function (e) {
          logger.error(e);
          res.apiError(e);
     })
