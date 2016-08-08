@@ -50,7 +50,7 @@ function add(req, res) {
         req.token.perssion = result;
         req.token.roleid = 4;
         req.token.vendorid = result.insertId;
-        res.setHeader('token', jwt.sign({email:req.token.email,name:req.body.user.name,roleid:4,
+        res.setHeader('x-token', jwt.sign({email:req.token.email,name:req.body.user.name,roleid:4,
                               isverification:null}, 'air'));
         gbObj.redis.setex(req.token.email,1200,JSON.stringify(req.token));
         res.apiSuccess();

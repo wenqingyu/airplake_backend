@@ -80,12 +80,12 @@ function auth(req, res, next) {
             return next();
         }
         //非法路由
-        if (!req.headers.token) {
+        if (!req.headers['x-token']) {
             logger.error(err.tokenError);
             return res.apiError(err.tokenError);
         }
         //获取token
-        let token = jwt.verify(req.headers.token, 'air');
+        let token = jwt.verify(req.headers['x-token'], 'air');
         //获取路由的资源
         let source = req.url.split('/')[3];
         //从redis中获取权限信息
@@ -108,7 +108,7 @@ function auth(req, res, next) {
             logger.error(err.authError);
             return res.apiError(err.authError);
         } else {
-            res.setHeader('token', req.headers.token);
+            res.setHeader('x-token', req.headers['x-token']);
             req.token = JSON.parse(redisResult);
             gbObj.redis.setex(token.email,1200,redisResult);
             next();

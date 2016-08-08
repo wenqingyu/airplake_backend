@@ -47,7 +47,7 @@ function login(req, res) {
         tokenObj.perssion = result;
         let token = jwt.sign({email:tokenObj.email,name:req.body.name,roleid:tokenObj.roleid,
                               isverification:tokenObj.isverification}, 'air');
-        res.setHeader('token', token);
+        res.setHeader('x-token', token);
         gbObj.redis.setex(tokenObj.email,1200,JSON.stringify(tokenObj));
         res.apiSuccess();
     }).catch(function (er) {
@@ -137,7 +137,7 @@ function update(req, res) {
         //赋值权限
         tokenObj.perssion = result;
         gbObj.redis.setex(tokenObj.email,1200,JSON.stringify(tokenObj));
-        res.setHeader('token', jwt.sign({email:tokenObj.email,name:req.body.user.name,roleid:tokenObj.roleid,
+        res.setHeader('x-token', jwt.sign({email:tokenObj.email,name:req.body.user.name,roleid:tokenObj.roleid,
                               isverification:null}, 'air'));
         res.apiSuccess();
     }).catch(function (er) {
