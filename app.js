@@ -37,7 +37,7 @@ app.use(methodOverride());
 app.use(extendAPIOutput);
 //put,delete请求时，会先发送options请求，需要给回应
 app.options('*', function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE,HEAD');
     res.status = 200;
     res.send();
 })
@@ -125,7 +125,8 @@ function auth(req, res, next) {
 function extendAPIOutput(req, res, next) {
     //解决跨域问题
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,token');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,x-token,Accept,X-Requested-With');
+    res.setHeader('Access-Control-Expose-Headers', 'x-token');
     //相应api成功结果
     res.apiSuccess = (data) => {
         res.jsonp({
